@@ -1,36 +1,53 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:insmanager/Payment/payment.dart';
+import 'package:insmanager/screens/login_screens/login_screen.dart';
 import 'package:insmanager/screens/mainfour/myclaims.dart';
 import 'package:insmanager/screens/mainfour/vehicles_screen.dart';
+import 'package:insmanager/screens/userprofle_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:insmanager/loading.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'chat/liveChat.dart';
 
 class MainInterface extends StatefulWidget {
+  String userId;
+  MainInterface({this.userId});
   @override
-  _MainInterfaceState createState() => _MainInterfaceState();
+  _MainInterfaceState createState() => _MainInterfaceState(userId: userId);
 }
 
 class _MainInterfaceState extends State<MainInterface> {
+
+  String userId;
+  _MainInterfaceState({this.userId});
+
   SharedPreferences prefs;
 
-  initSherePrefernce() async {
+  bool loading = true;
+
+  initSheardPreference() async {
     prefs = await SharedPreferences.getInstance();
+    setState(() {
+      loading = false;
+    });
 
     print(prefs.getString("userId") + "*******************************");
   }
 
   @override
   void initState() {
-    initSherePrefernce();
+    initSheardPreference();
+    print(widget.userId);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading?Loading(): Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Padding(
@@ -40,7 +57,13 @@ class _MainInterfaceState extends State<MainInterface> {
         actions: <Widget>[
           GestureDetector(
             onTap: () {
-              Navigator.of(context).pushNamed('/userprofilepage');
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserProfile(
+                        // phoneNumber: phone,
+                        userId: prefs.getString("userId"),
+                      )));
             },
             child: Padding(
               padding: EdgeInsets.only(right: 10.0, top: 12),
@@ -49,6 +72,7 @@ class _MainInterfaceState extends State<MainInterface> {
                 height: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  // image: Image.file(),
                   color: Colors.white,
                 ),
               ),
@@ -81,36 +105,25 @@ class _MainInterfaceState extends State<MainInterface> {
                 child: Center(
                   child: Column(
                     children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        margin: EdgeInsets.only(top: 30),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: AssetImage('images/user.png'),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
+                      img(),
                       SizedBox(
                         height: 15,
                       ),
-                      Text(
-                        "User Name",
-                        style: TextStyle(fontSize: 22, color: Colors.white),
-                      ),
-                      Text(
-                        "Insurance No",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
+                      Name(),
+                      policyNumber(),
                     ],
                   ),
                 ),
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushNamed('/userprofilepage');
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserProfile(
+                            // phoneNumber: phone,
+                            userId: prefs.getString("userId"),
+                          )));
                 },
                 child: ListTile(
                   leading: Icon(
@@ -127,9 +140,14 @@ class _MainInterfaceState extends State<MainInterface> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async{
+                  SharedPreferences preferences = await SharedPreferences.getInstance();
+                  await preferences.clear();
                   FirebaseAuth.instance.signOut().then((value) {
-                    Navigator.of(context).pushReplacementNamed('/landingpage');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
                   }).catchError((e) {
                     print(e);
                   });
@@ -304,4 +322,193 @@ class _MainInterfaceState extends State<MainInterface> {
       ),
     );
   }
+
+  Widget Name() {
+    return StreamBuilder(
+        stream: Firestore.instance
+            .collection('users')
+            .where('userID', isEqualTo: prefs.getString("userId"))
+            .snapshots(),
+        // stream: Firestore.instance.collection('Videos').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: snapshot.data.documents.map((document) {
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: 'User Name - ',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black)),
+                              TextSpan(
+                                  text: document['fName'].toString() ??
+                                      "",
+                                  style: TextStyle(color: Colors.black,fontSize: 18)),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          );
+        });
+  }
+  Widget policyNumber() {
+    return StreamBuilder(
+        stream: Firestore.instance
+            .collection('users')
+            .where('userID', isEqualTo: prefs.getString("userId"))
+            .snapshots(),
+        // stream: Firestore.instance.collection('Videos').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: snapshot.data.documents.map((document) {
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: 'Insurance Policy No - ',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black)),
+                              TextSpan(
+                                  text: document['policyNumber'].toString() ??
+                                      "",
+                                  style: TextStyle(color: Colors.black,fontSize: 18)),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          );
+        });
+  }
+
+  Widget img() {
+    return StreamBuilder(
+        stream: Firestore.instance
+            .collection('userImage')
+            .where('user_id', isEqualTo: widget.userId)
+            .snapshots(),
+        // stream: Firestore.instance.collection('Videos').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context,index){
+                var document = snapshot.data.documents[index].data;
+                return Column(
+                  children: <Widget>[
+                    Column(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.indigo,
+                          radius: 50.0,
+                          child: ClipRect(
+                            child: Image.network(document['imageUrl'],
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              });
+        });
+  }
+  Widget img1() {
+    return StreamBuilder(
+        stream: Firestore.instance
+            .collection('userImage')
+            .where('user_id', isEqualTo: widget.userId)
+            .snapshots(),
+        // stream: Firestore.instance.collection('Videos').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context,index){
+                var document = snapshot.data.documents[index].data;
+                return Column(
+                  children: <Widget>[
+                    Column(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.indigo,
+                          radius:10.0,
+                          child: ClipRect(
+                            child: Image.network(document['imageUrl'],
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              });
+        });
+  }
+
 }

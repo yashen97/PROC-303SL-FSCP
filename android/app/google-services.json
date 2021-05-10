@@ -43,6 +43,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "74331668066-5s8mouosm4pts4c01ra83d2f6qdicfqm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.insmanager",
+            "certificate_hash": "14c3ea435382cac064d3866ac7a2d6507d7cbe46"
+          }
+        },
+        {
           "client_id": "74331668066-vvf1979muirj5jaheotccabfp85til81.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

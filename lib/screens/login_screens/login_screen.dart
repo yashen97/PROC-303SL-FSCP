@@ -25,9 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs = await SharedPreferences.getInstance();
 
     if (prefs.getBool('isLogin')) {
+
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => MainInterface()));
     }
+
   }
 
   @override

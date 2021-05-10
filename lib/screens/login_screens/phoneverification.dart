@@ -39,6 +39,7 @@ Future<bool> loginUser(
           print(docCurrent);
 
           if (!docCurrent.exists) {
+
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

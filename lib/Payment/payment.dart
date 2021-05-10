@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:insmanager/screens/maininterface_screen.dart';
 import 'package:intl/intl.dart';
-//import 'package:payhere_mobilesdk_flutter/payhere_mobilesdk_flutter.dart';
+import 'package:payhere_mobilesdk_flutter/payhere_mobilesdk_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -37,119 +37,154 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   void startOneTimePayment(BuildContext context, String ref_id) async {
-    // Map paymentObject = {
-    //   "sandbox": true, // true if using Sandbox Merchant ID
-    //   "merchant_id": "1213092", // Replace your Merchant ID
-    //   "merchant_secret": "4ToiGbImI4a4uPXwXw4Up14Et6yNg4tmN8LKlUhgTQYr",
-    //   "notify_url": "",
-    //   "order_id": ref_id.toString(),
-    //   "items": "Lesson Paymenrts",
-    //   "amount": widget.amount,
-    //   "currency": "LKR",
-    //   "first_name": "",
-    //   "last_name": "",
-    //   "email": "samanp@gmail.com",
-    //   "phone": "",
-    //   "address": "",
-    //   "city": "",
-    //   "country": "Sri Lanka",
-    //   "delivery_address": "",
-    //   "delivery_city": "",
-    //   "delivery_country": "Sri Lanka",
-    //   "custom_1": "",
-    //   "custom_2": ""
-    // };
-    //
-    // void showAlert(BuildContext context, String title, String msg) {
-    //   // set up the button
-    //   Widget okButton = FlatButton(
-    //     child: Text("OK"),
-    //     onPressed: () {
-    //       Navigator.pop(context);
-    //     },
-    //   );
-    //
-    //   // set up the AlertDialog
-    //   AlertDialog alert = AlertDialog(
-    //     title: Text(title),
-    //     content: Text(msg),
-    //     actions: [
-    //       okButton,
-    //     ],
-    //   );
-    //
-    //   // show the dialog
-    //   showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return alert;
-    //     },
-    //   );
-    // }
-    //
-    // PayHere.startPayment(paymentObject, (paymentId) {
-    //   SavePayments();
-    // }, (error) {
-    //   print("One Time Payment Failed. Error: $error");
-    //   showAlert(context, "Payment Failed", "$error");
-    // }, () {
-    //   print("One Time Payment Dismissed");
-    //   showAlert(context, "Payment Dismissed", "");
-    // });
+    Map paymentObject = {
+      "sandbox": true, // true if using Sandbox Merchant ID
+      "merchant_id": "1213092", // Replace your Merchant ID
+      "merchant_secret": "4ToiGbImI4a4uPXwXw4Up14Et6yNg4tmN8LKlUhgTQYr",
+      "notify_url": "",
+      "order_id": ref_id.toString(),
+      "items": "Lesson Paymenrts",
+      "amount": widget.amount,
+      "currency": "LKR",
+      "first_name": "",
+      "last_name": "",
+      "email": "samanp@gmail.com",
+      "phone": "",
+      "address": "",
+      "city": "",
+      "country": "Sri Lanka",
+      "delivery_address": "",
+      "delivery_city": "",
+      "delivery_country": "Sri Lanka",
+      "custom_1": "",
+      "custom_2": ""
+    };
+
+    void showAlert(BuildContext context, String title, String msg) {
+      // set up the button
+      Widget okButton = FlatButton(
+        child: Text("OK"),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      );
+
+      // set up the AlertDialog
+      AlertDialog alert = AlertDialog(
+        title: Text(title),
+        content: Text(msg),
+        actions: [
+          okButton,
+        ],
+      );
+
+      // show the dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
+
+    PayHere.startPayment(paymentObject, (paymentId) {
+      SavePayments();
+    }, (error) {
+      print("One Time Payment Failed. Error: $error");
+      showAlert(context, "Payment Failed", "$error");
+    }, () {
+      print("One Time Payment Dismissed");
+      showAlert(context, "Payment Dismissed", "");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        // appBar: AppBar(
+        //   iconTheme: IconThemeData(
+        //     color: Colors.black, //change your color here
+        //   ),
+        //   elevation: 0,
+        //   title: Text(
+        //     'Payment',
+        //     style: TextStyle(color: Colors.blueAccent),
+        //   ),
+        //   backgroundColor: Colors.white,
+        //   bottom: PreferredSize(
+        //       child: Container(
+        //         color: Colors.grey[100],
+        //         height: 1.0,
+        //       ),
+        //       preferredSize: Size.fromHeight(1.0)),
+        // ),
         appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
+          centerTitle: true,
+          title: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text("Payment"),
           ),
-          elevation: 0,
-          title: Text(
-            'Payment',
-            style: TextStyle(color: Colors.blueAccent),
-          ),
-          backgroundColor: Colors.white,
-          bottom: PreferredSize(
-              child: Container(
-                color: Colors.grey[100],
-                height: 1.0,
-              ),
-              preferredSize: Size.fromHeight(1.0)),
-        ),
-        body: ListView(
-          children: [
-            Container(
-              padding: EdgeInsets.all(16),
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Text(
-                          'total_payment',
-                        ),
-                      ),
-                      Container(
-                        child: Text('\RS ' + widget.amount,
-                            style: TextStyle(color: Colors.black)),
-                      )
-                    ],
-                  ),
-                ],
-              ),
+          leading: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainInterface()),
+                );
+              },
             ),
-            Container(
-              margin: EdgeInsets.only(top: 12),
-              padding: EdgeInsets.all(16),
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          ),
+          backgroundColor: Colors.indigo[700],
+          elevation: 22,
+          shadowColor: Colors.indigoAccent,
+          brightness: Brightness.dark,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                bottomRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10)),
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(20),
+            child: SizedBox(),
+          ),
+        ),
+
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView(
+            children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          child: Text(
+                            'total_payment',
+                          ),
+                        ),
+                        Container(
+                          child: Text('\RS ' + widget.amount,
+                              style: TextStyle(color: Colors.black)),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 12),
+                padding: EdgeInsets.all(16),
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
 //                  Row(
 //                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                    children: [
@@ -200,37 +235,38 @@ class _PaymentPageState extends State<PaymentPage> {
 //                      ],
 //                    ),
 //                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.all(32),
-              child: SizedBox(
-                  width: double.maxFinite,
-                  child: RaisedButton(
-                    elevation: 2,
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(3.0),
-                        side: BorderSide(color: Colors.blueAccent)),
-                    onPressed: () {
+              Container(
+                margin: EdgeInsets.all(32),
+                child: SizedBox(
+                    width: double.maxFinite,
+                    child: RaisedButton(
+                      elevation: 2,
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(3.0),
+                          side: BorderSide(color: Colors.blueAccent)),
+                      onPressed: () {
 //                      showLoading(AppLocalizations.of(context)
 //                          .translate('payment_success'));
 
-                      startOneTimePayment(context, "23232323232423");
-                    },
-                    padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
-                    color: Colors.blue,
-                    child: Text(
-                      "Online Payment",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                  )),
-            ),
-          ],
+                        startOneTimePayment(context, "23232323232423");
+                      },
+                      padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                      color: Colors.indigo,
+                      child: Text(
+                        "Online Payment",
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    )),
+              ),
+            ],
+          ),
         ));
   }
 
@@ -320,7 +356,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
   SavePayments() async {
     var documentReference =
-        Firestore.instance.collection('Payments').document();
+    Firestore.instance.collection('Payments').document();
 
     Firestore.instance.runTransaction((transaction) async {
       await transaction.set(

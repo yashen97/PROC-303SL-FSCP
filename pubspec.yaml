@@ -45,7 +45,7 @@ dependencies:
   cached_network_image:
   fluttertoast:
   photo_view:
-  #payhere_mobilesdk_flutter:
+  payhere_mobilesdk_flutter: ^1.0.0
   flutter_spinkit:
 
 

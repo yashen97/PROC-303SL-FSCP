@@ -422,8 +422,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             onPressed: () async {
                               if (_formkey.currentState.validate()) {
                                 _formkey.currentState.save();
+
                                 prefs.setString(
-                                    "userId", prefs.getString('userId'));
+                                    "userId", widget.phoneNumber);
+
                                 prefs.setBool('isLogin', true);
                                 final usersref =
                                     Firestore.instance.collection('userId');

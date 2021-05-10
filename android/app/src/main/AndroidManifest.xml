@@ -6,7 +6,7 @@
     <application
         android:label="INS User"
         android:icon="@mipmap/ic_launcher"
-       tools:replace="android:label"
+       tools:replace="android:allowBackup"
        android:usesCleartextTraffic="true">
 
         <activity
