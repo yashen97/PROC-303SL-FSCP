@@ -48,7 +48,7 @@ class _PaymentPageState extends State<PaymentPage> {
       "currency": "LKR",
       "first_name": "",
       "last_name": "",
-      "email": "samanp@gmail.com",
+      "email": "yashenraveesha97@gmail.com",
       "phone": "",
       "address": "",
       "city": "",
